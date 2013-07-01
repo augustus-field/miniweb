@@ -1,9 +1,12 @@
 (ns miniweb.core
   (:use [hiccup.core]
+        [hiccup.page :only (include-css include-js)]
+        [hiccup.element :only (link-to)]
         [compojure.core]
         [compojure.route]        
         [ring.adapter.jetty :only (run-jetty)]
-        [miniweb.util :only (code*)]))
+        [miniweb.util :only (code*)]
+        [miniweb.layout :only (default-stylesheets default-javascripts)]))
 
 (defn mockup-1 []
   (html [:head [:title "mini-browser"]]
@@ -43,7 +46,9 @@
 (defn mockup-4 []
   (html
    [:head
-    [:title "Mini-browser"]]
+    [:title "Mini-browser"]
+    (apply include-css default-stylesheets)
+    (apply include-js default-javascripts)]
    [:body {:id "browser"}
     [:div {:id "browser"}
      [:h2 "Mini-browser"]]
@@ -64,7 +69,9 @@
 (defn layout [& body]
   (html
    [:head
-    [:title "Mini-browser"]]
+    [:title "Mini-browser"]
+    (apply include-css default-stylesheets)
+    (apply include-js default-javascripts)]
    [:body {:id "browser"}
     [:div {:id "browser"}
      [:h2 "Mini-browser"]]
@@ -76,6 +83,7 @@
 (defn namespace-names []
   (->> (all-ns)
        (map ns-name)
+       (filter #(not (boolean (re-seq #"^user$" (str %))))) ; filtering user ns
        (sort)))
 
 (defn var-names
